@@ -1,0 +1,28 @@
+{
+   "compilerOptions": {
+     "target": "es6", // Целевая версия ECMAScript (ES6)
+     "module": "commonjs", // Формат модулей (CommonJS)
+     "lib": ["dom", "es6", "es2017", "esnext.asynciterable"], // Библиотеки, доступные для использования в проекте
+     "skipLibCheck": true, // Пропустить проверку библиотек
+     "sourceMap": true, // Генерировать карты исходного кода
+     "outDir": "./dist", // Директория для выходных файлов
+     "moduleResolution": "node", // Разрешение модулей по алгоритму Node.js
+     "removeComments": true, // Удалять комментарии из исходного кода при компиляции
+     "noImplicitAny": true, // Запрет использования неявного any
+     "strictNullChecks": true, // Включить строгую проверку на null
+     "strictFunctionTypes": true, // Строгие типы для функций
+     "noImplicitThis": true, // Запрет использования неявного this
+     "noUnusedLocals": true, // Запрет неиспользуемых локальных переменных
+     "noUnusedParameters": true, // Запрет неиспользуемых параметров
+     "noImplicitReturns": true, // Запрет пропущенных return в функциях
+     "noFallthroughCasesInSwitch": true, // Запрет пустых case в switch
+     "allowSyntheticDefaultImports": true, // Разрешить синтетические default imports
+     "esModuleInterop": true, // Разрешить interoperability с CommonJS
+     "emitDecoratorMetadata": true, // Генерировать metadata для декораторов
+     "experimentalDecorators": true, // Разрешить экспериментальные декораторы
+     "resolveJsonModule": true, // Разрешить импорт JSON как модулей
+     "baseUrl": "." // Базовый путь для разрешения модулей
+   },
+   "exclude": ["node_modules"], // Исключить директорию node_modules из компиляции
+   "include": ["./src/**/*.tsx", "./src/**/*.ts"] // Включить файлы для компиляции
+ }

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  your_service:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - your_network
+
+networks:
+  your_network:
+    external: true
