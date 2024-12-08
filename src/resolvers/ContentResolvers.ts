@@ -1,7 +1,7 @@
 import { Query, Resolver, Arg, Int } from "type-graphql";
-import { Content, ContentType } from "../entities/Content";
+import { Content, ContentType,ReleaseStatus } from "../entities/Content";
 import { Genre } from "../entities/Genre";
-import { Repository, Like, MoreThanOrEqual } from "typeorm";
+import { Repository, Like,Between, MoreThanOrEqual } from "typeorm";
 import { dataSource } from "../database/database.config";
 
 @Resolver()
@@ -19,6 +19,7 @@ export class ContentResolver {
     async genres(): Promise<Genre[]> {
         return await this.genreRepository.find();
     }
+
 
     // 2. Получить все фильмы с фильтрацией и пагинацией
     @Query(() => [Content])
@@ -46,8 +47,67 @@ export class ContentResolver {
             relations: ["genres", "studios", "contentIds", "episodes"],
             take: validatedLimit,  // Ограничиваем количество записей
             skip: offset, // Пропуск записей для пагинации
+            order: { release_date: "DESC" },
         });
     }
+    
+
+    
+
+    // Фильтрация контента по году, рейтингу, типу, дате выхода и статусу
+    @Query(() => [Content])
+    async getFilteredContent(
+        @Arg("year", () => Int, { nullable: true }) year?: number,
+        @Arg("rating", () => Int, { nullable: true }) rating?: number,
+        @Arg("contentType", () => ContentType, { nullable: true }) contentType?: ContentType,
+        @Arg("releaseDateStart", () => Int, { nullable: true }) releaseDateStart?: number,
+        @Arg("releaseDateEnd", () => Int, { nullable: true }) releaseDateEnd?: number,
+        @Arg("releaseStatus", () => ReleaseStatus, { nullable: true }) releaseStatus?: ReleaseStatus,
+        @Arg("page", () => Int, { nullable: true, defaultValue: 1 }) page: number = 1,
+        @Arg("limit", () => Int, { nullable: true, defaultValue: 10 }) limit: number = 10
+    ): Promise<Content[]> {
+        const MAX_LIMIT = 100;
+        const validatedLimit = Math.min(Math.max(limit, 1), MAX_LIMIT);
+        const offset = (page - 1) * validatedLimit;
+
+        const where: any = {};
+
+        // Фильтрация по году
+        if (year) {
+            where.year = year;
+        }
+
+        // Фильтрация по рейтингу
+        if (rating) {
+            where.rating = MoreThanOrEqual(rating);
+        }
+
+        // Фильтрация по типу контента
+        if (contentType) {
+            where.content_type = contentType;
+        }
+
+        // Фильтрация по дате выхода (диапазон)
+        if (releaseDateStart && releaseDateEnd) {
+            where.release_date = Between(releaseDateStart, releaseDateEnd);
+        } else if (releaseDateStart) {
+            where.release_date = MoreThanOrEqual(releaseDateStart);
+        }
+
+        // Фильтрация по статусу релиза
+        if (releaseStatus) {
+            where.release_status = releaseStatus;
+        }
+
+        return await this.contentRepository.find({
+            where,
+            relations: ["genres", "studios", "contentIds", "episodes"],
+            take: validatedLimit,
+            skip: offset,
+            order: { release_date: "DESC" },
+        });
+    }
+
 
     // 3. Получить контент по ID
     @Query(() => Content, { nullable: true })
@@ -85,6 +145,7 @@ export class ContentResolver {
             relations: ["genres", "studios", "contentIds", "episodes"],
             take: validatedLimit,
             skip: offset,
+            order: { release_date: "DESC" },
         });
     }
 
