@@ -199,5 +199,15 @@ export class ContentResolver {
     async getContentCountByType(@Arg("contentType", () => ContentType) contentType: ContentType): Promise<number> {
         return await this.contentRepository.count({ where: { content_type: contentType } });
     }
+    
+    // 8. Получить список всех доступных ID контента
+	@Query(() => [Int])
+	async getAllContentIds(): Promise<number[]> {
+	    const contentIds = await this.contentRepository.find({
+		select: ["content_id"], // Выбираем только поле content_id
+	    });
+	    return contentIds.map((content) => content.content_id); // Возвращаем массив ID
+	}
+
 }
 
